@@ -16,11 +16,18 @@ interface State {
 export class App extends React.Component<{}, State> {
   nameTimerId: number | null = null;
 
-  hasClock = true;
-
   state: State = {
     hasClock: true,
     clockName: 'Clock-0',
+  };
+
+  handleContextMenu = (event: MouseEvent): void => {
+    event.preventDefault();
+    this.setState({ hasClock: false });
+  };
+
+  handleClick = (): void => {
+    this.setState({ hasClock: true });
   };
 
   componentDidMount(): void {
@@ -30,23 +37,17 @@ export class App extends React.Component<{}, State> {
       });
     }, 3300);
 
-    document.addEventListener('contextmenu', (event: MouseEvent) => {
-      event.preventDefault();
-
-      this.hasClock = false;
-      this.setState({ hasClock: false });
-    });
-
-    document.addEventListener('click', () => {
-      this.hasClock = true;
-      this.setState({ hasClock: true });
-    });
+    document.addEventListener('contextmenu', this.handleContextMenu);
+    document.addEventListener('click', this.handleClick);
   }
 
   componentWillUnmount(): void {
     if (this.nameTimerId !== null) {
       window.clearInterval(this.nameTimerId);
     }
+
+    document.removeEventListener('contextmenu', this.handleContextMenu);
+    document.removeEventListener('click', this.handleClick);
   }
 
   render() {
